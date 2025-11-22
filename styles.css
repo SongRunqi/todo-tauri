@@ -4,213 +4,317 @@
     box-sizing: border-box;
 }
 
+:root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #818cf8;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-hover: #f3f4f6;
+    --border: #e5e7eb;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --radius: 12px;
+    --radius-lg: 16px;
+}
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
+    line-height: 1.6;
 }
 
 .container {
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
     width: 100%;
-    max-width: 600px;
-    padding: 30px;
+    max-width: 640px;
+    padding: 0;
+    overflow: hidden;
+    animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 30px;
+    padding: 32px 32px 24px;
+    position: relative;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
 }
 
 h1 {
-    color: #333;
-    font-size: 32px;
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
     margin: 0;
-    flex: 1;
-    text-align: center;
+    letter-spacing: -0.5px;
 }
 
 .settings-btn {
-    background: transparent;
-    border: none;
-    font-size: 28px;
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 20px;
     cursor: pointer;
     padding: 8px;
-    border-radius: 50%;
-    transition: all 0.3s;
-    opacity: 0.6;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .settings-btn:hover {
-    opacity: 1;
-    background: rgba(102, 126, 234, 0.1);
-    transform: rotate(30deg);
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.settings-btn:active {
+    transform: translateY(-50%) scale(0.95);
 }
 
 .input-section {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 8px;
+    padding: 24px 32px;
+    background: var(--bg-secondary);
 }
 
 #todoInput {
     flex: 1;
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.3s;
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 15px;
+    transition: all 0.2s;
+    background: white;
+    color: var(--text-primary);
 }
 
 #todoInput:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+#todoInput::placeholder {
+    color: var(--text-muted);
 }
 
 #addBtn {
-    padding: 12px 25px;
-    background: #667eea;
+    padding: 14px 24px;
+    background: var(--primary);
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
+    border-radius: var(--radius);
+    font-size: 15px;
+    font-weight: 500;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
 }
 
 #addBtn:hover {
-    background: #5568d3;
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+#addBtn:active {
+    transform: translateY(0);
 }
 
 .filter-section {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 8px;
+    padding: 0 32px 20px;
     justify-content: center;
+    background: var(--bg-secondary);
 }
 
 .filter-btn {
-    padding: 8px 16px;
-    border: 2px solid #e0e0e0;
-    background: white;
+    padding: 8px 20px;
+    border: none;
+    background: transparent;
     border-radius: 20px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
     font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
 }
 
 .filter-btn:hover {
-    border-color: #667eea;
-    color: #667eea;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary);
 }
 
 .filter-btn.active {
-    background: #667eea;
+    background: var(--primary);
     color: white;
-    border-color: #667eea;
+    box-shadow: var(--shadow-sm);
 }
 
 .todo-list {
     list-style: none;
-    margin-bottom: 20px;
-    max-height: 400px;
+    padding: 8px 24px 24px;
+    max-height: 420px;
     overflow-y: auto;
 }
 
 .todo-item {
     display: flex;
     align-items: center;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    transition: all 0.3s;
+    padding: 16px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: todoSlideIn 0.3s ease-out;
+}
+
+@keyframes todoSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .todo-item:hover {
-    background: #e9ecef;
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow-sm);
+    transform: translateY(-1px);
+}
+
+.todo-item.completed {
+    opacity: 0.6;
 }
 
 .todo-item.completed .todo-text {
     text-decoration: line-through;
-    color: #999;
+    color: var(--text-muted);
 }
 
 .todo-checkbox {
     width: 20px;
     height: 20px;
-    margin-right: 15px;
+    margin-right: 14px;
     cursor: pointer;
+    accent-color: var(--primary);
+    flex-shrink: 0;
 }
 
 .todo-text {
     flex: 1;
-    font-size: 16px;
-    color: #333;
+    font-size: 15px;
+    color: var(--text-primary);
+    word-break: break-word;
 }
 
 .delete-btn {
-    padding: 6px 12px;
-    background: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 5px;
+    padding: 6px 14px;
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 14px;
-    transition: background 0.3s;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+    flex-shrink: 0;
 }
 
 .delete-btn:hover {
-    background: #c82333;
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
 }
 
 .stats {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 20px;
-    border-top: 2px solid #e0e0e0;
-    color: #666;
+    padding: 20px 32px 28px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-secondary);
+}
+
+#todoCount {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
 }
 
 #clearCompleted {
     padding: 8px 16px;
-    background: #6c757d;
-    color: white;
-    border: none;
-    border-radius: 5px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
     cursor: pointer;
-    transition: background 0.3s;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
 }
 
 #clearCompleted:hover {
-    background: #5a6268;
+    background: var(--text-secondary);
+    color: white;
+    border-color: var(--text-secondary);
 }
 
 .todo-list::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 .todo-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
+    background: transparent;
 }
 
 .todo-list::-webkit-scrollbar-thumb {
-    background: #888;
+    background: var(--border);
     border-radius: 10px;
 }
 
 .todo-list::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: var(--text-muted);
 }
 
 /* 模态框样式 */
@@ -222,40 +326,44 @@ h1 {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    animation: fadeIn 0.3s;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
 }
 
 .modal.show {
     display: flex;
     justify-content: center;
     align-items: center;
+    animation: fadeIn 0.25s ease-out;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .modal-content {
     background: white;
-    border-radius: 15px;
+    border-radius: var(--radius-lg);
     width: 90%;
-    max-width: 500px;
+    max-width: 480px;
     max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: slideUp 0.3s;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    animation: modalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes slideUp {
+@keyframes modalSlideUp {
     from {
-        transform: translateY(50px);
+        transform: translateY(30px) scale(0.95);
         opacity: 0;
     }
     to {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
         opacity: 1;
     }
 }
@@ -264,48 +372,58 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 25px;
-    border-bottom: 2px solid #e0e0e0;
+    padding: 24px 28px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
 }
 
 .modal-header h2 {
     margin: 0;
-    color: #333;
-    font-size: 24px;
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
 }
 
 .close-btn {
-    background: transparent;
-    border: none;
-    font-size: 32px;
-    color: #999;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 24px;
+    color: white;
     cursor: pointer;
     padding: 0;
     width: 32px;
     height: 32px;
     line-height: 32px;
     text-align: center;
-    border-radius: 50%;
-    transition: all 0.3s;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .close-btn:hover {
-    background: #f0f0f0;
-    color: #333;
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
 }
 
 .modal-body {
-    padding: 25px;
+    padding: 28px;
+    max-height: calc(90vh - 160px);
+    overflow-y: auto;
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 22px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
 }
 
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    color: #333;
+    color: var(--text-primary);
     font-weight: 500;
     font-size: 14px;
 }
@@ -314,29 +432,33 @@ h1 {
 .form-group input[type="password"],
 .form-group select {
     width: 100%;
-    padding: 12px 15px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
+    padding: 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
     font-size: 14px;
-    transition: border-color 0.3s;
+    transition: all 0.2s;
     font-family: inherit;
+    background: white;
+    color: var(--text-primary);
 }
 
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .form-group small {
     display: block;
     margin-top: 6px;
-    color: #666;
+    color: var(--text-secondary);
     font-size: 12px;
+    line-height: 1.5;
 }
 
 .form-group small a {
-    color: #667eea;
+    color: var(--primary);
     text-decoration: none;
 }
 
@@ -345,60 +467,70 @@ h1 {
 }
 
 .config-status {
-    margin-top: 15px;
-    padding: 12px;
-    border-radius: 8px;
+    margin-top: 20px;
+    padding: 14px 16px;
+    border-radius: var(--radius);
     font-size: 14px;
     display: none;
+    font-weight: 500;
 }
 
 .config-status.success {
     display: block;
-    background: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .config-status.error {
     display: block;
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .modal-footer {
-    padding: 20px 25px;
-    border-top: 2px solid #e0e0e0;
+    padding: 20px 28px;
+    border-top: 1px solid var(--border);
     display: flex;
-    gap: 10px;
+    gap: 12px;
     justify-content: flex-end;
+    background: var(--bg-secondary);
 }
 
 .save-btn,
 .cancel-btn {
-    padding: 10px 20px;
+    padding: 11px 24px;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius);
     font-size: 14px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 500;
 }
 
 .save-btn {
-    background: #667eea;
+    background: var(--primary);
     color: white;
 }
 
 .save-btn:hover {
-    background: #5568d3;
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.save-btn:active {
+    transform: translateY(0);
 }
 
 .cancel-btn {
-    background: #e0e0e0;
-    color: #333;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
 }
 
 .cancel-btn:hover {
-    background: #d0d0d0;
+    background: var(--bg-hover);
+    border-color: var(--text-secondary);
 }
