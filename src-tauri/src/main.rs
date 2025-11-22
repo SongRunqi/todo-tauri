@@ -2,6 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use serde::{Deserialize, Serialize};
+use std::fs;
+use std::path::PathBuf;
 use std::process::Command;
 use tauri::Manager;
 
@@ -35,6 +37,66 @@ struct AlfredResponse {
     items: Vec<AlfredItem>,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+struct AppConfig {
+    #[serde(rename = "apiKey")]
+    api_key: Option<String>,
+    #[serde(rename = "language")]
+    language: Option<String>,
+    #[serde(rename = "llmBaseUrl")]
+    llm_base_url: Option<String>,
+    #[serde(rename = "llmModel")]
+    llm_model: Option<String>,
+}
+
+impl Default for AppConfig {
+    fn default() -> Self {
+        Self {
+            api_key: None,
+            language: Some("zh".to_string()),
+            llm_base_url: None,
+            llm_model: None,
+        }
+    }
+}
+
+fn get_config_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    let app_dir = app
+        .path_resolver()
+        .app_data_dir()
+        .ok_or("Failed to get app data directory")?;
+
+    // 确保目录存在
+    fs::create_dir_all(&app_dir).map_err(|e| format!("Failed to create app directory: {}", e))?;
+
+    Ok(app_dir.join("config.json"))
+}
+
+fn load_config(app: &tauri::AppHandle) -> AppConfig {
+    match get_config_path(app) {
+        Ok(config_path) => {
+            if config_path.exists() {
+                if let Ok(content) = fs::read_to_string(&config_path) {
+                    if let Ok(config) = serde_json::from_str::<AppConfig>(&content) {
+                        return config;
+                    }
+                }
+            }
+        }
+        Err(_) => {}
+    }
+    AppConfig::default()
+}
+
+fn save_config(app: &tauri::AppHandle, config: &AppConfig) -> Result<(), String> {
+    let config_path = get_config_path(app)?;
+    let json = serde_json::to_string_pretty(config)
+        .map_err(|e| format!("Failed to serialize config: {}", e))?;
+    fs::write(&config_path, json)
+        .map_err(|e| format!("Failed to write config file: {}", e))?;
+    Ok(())
+}
+
 fn get_todo_binary_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
     let resource_path = app
         .path_resolver()
@@ -45,10 +107,36 @@ fn get_todo_binary_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, St
 
 fn execute_todo_command(app: &tauri::AppHandle, args: &[&str]) -> Result<String, String> {
     let binary_path = get_todo_binary_path(app)?;
+    let config = load_config(app);
 
-    let output = Command::new(binary_path)
-        .args(args)
-        .env("TODO_LANG", "zh")
+    let mut cmd = Command::new(binary_path);
+    cmd.args(args);
+
+    // 设置语言
+    if let Some(lang) = &config.language {
+        cmd.env("TODO_LANG", lang);
+    }
+
+    // 设置 API Key
+    if let Some(api_key) = &config.api_key {
+        cmd.env("API_KEY", api_key);
+    }
+
+    // 设置 LLM Base URL
+    if let Some(base_url) = &config.llm_base_url {
+        if !base_url.is_empty() {
+            cmd.env("LLM_BASE_URL", base_url);
+        }
+    }
+
+    // 设置 LLM Model
+    if let Some(model) = &config.llm_model {
+        if !model.is_empty() {
+            cmd.env("LLM_MODEL", model);
+        }
+    }
+
+    let output = cmd
         .output()
         .map_err(|e| format!("执行命令失败: {}", e))?;
 
@@ -153,6 +241,17 @@ fn clear_completed(app: tauri::AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
+fn get_config(app: tauri::AppHandle) -> Result<AppConfig, String> {
+    Ok(load_config(&app))
+}
+
+#[tauri::command]
+fn save_app_config(app: tauri::AppHandle, config: AppConfig) -> Result<(), String> {
+    save_config(&app, &config)?;
+    Ok(())
+}
+
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
@@ -175,7 +274,9 @@ fn main() {
             add_todo,
             toggle_todo,
             delete_todo,
-            clear_completed
+            clear_completed,
+            get_config,
+            save_app_config
         ])
         .run(tauri::generate_context!())
         .expect("运行 Tauri 应用时出错");

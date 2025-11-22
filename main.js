@@ -122,6 +122,92 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// 设置相关 DOM 元素
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsModal = document.getElementById('settingsModal');
+const closeSettings = document.getElementById('closeSettings');
+const saveSettings = document.getElementById('saveSettings');
+const cancelSettings = document.getElementById('cancelSettings');
+const configStatus = document.getElementById('configStatus');
+
+// 设置表单元素
+const apiKeyInput = document.getElementById('apiKey');
+const languageSelect = document.getElementById('language');
+const llmBaseUrlInput = document.getElementById('llmBaseUrl');
+const llmModelInput = document.getElementById('llmModel');
+
+// 打开设置模态框
+async function openSettings() {
+    try {
+        const config = await invoke('get_config');
+
+        // 填充表单
+        apiKeyInput.value = config.apiKey || '';
+        languageSelect.value = config.language || 'zh';
+        llmBaseUrlInput.value = config.llmBaseUrl || '';
+        llmModelInput.value = config.llmModel || '';
+
+        // 显示模态框
+        settingsModal.classList.add('show');
+        configStatus.className = 'config-status';
+    } catch (error) {
+        console.error('加载配置失败:', error);
+    }
+}
+
+// 关闭设置模态框
+function closeSettingsModal() {
+    settingsModal.classList.remove('show');
+    configStatus.className = 'config-status';
+}
+
+// 保存设置
+async function saveSettingsConfig() {
+    try {
+        const config = {
+            apiKey: apiKeyInput.value.trim() || null,
+            language: languageSelect.value,
+            llmBaseUrl: llmBaseUrlInput.value.trim() || null,
+            llmModel: llmModelInput.value.trim() || null,
+        };
+
+        await invoke('save_app_config', { config });
+
+        // 显示成功消息
+        configStatus.className = 'config-status success';
+        configStatus.textContent = '✓ 配置保存成功！';
+
+        // 2秒后关闭模态框
+        setTimeout(() => {
+            closeSettingsModal();
+        }, 1500);
+    } catch (error) {
+        console.error('保存配置失败:', error);
+        configStatus.className = 'config-status error';
+        configStatus.textContent = '✗ 保存失败: ' + error;
+    }
+}
+
+// 设置相关事件监听
+settingsBtn.addEventListener('click', openSettings);
+closeSettings.addEventListener('click', closeSettingsModal);
+cancelSettings.addEventListener('click', closeSettingsModal);
+saveSettings.addEventListener('click', saveSettingsConfig);
+
+// 点击模态框背景关闭
+settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) {
+        closeSettingsModal();
+    }
+});
+
+// ESC 键关闭模态框
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && settingsModal.classList.contains('show')) {
+        closeSettingsModal();
+    }
+});
+
 // 事件监听
 addBtn.addEventListener('click', addTodo);
 todoInput.addEventListener('keypress', (e) => {
