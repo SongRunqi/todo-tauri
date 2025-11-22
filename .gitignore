@@ -9,6 +9,8 @@ src-tauri/target/
 
 # Data files
 todos.json
+backup.json
+.todo/
 
 # Logs
 *.log
@@ -18,3 +20,10 @@ todos.json
 .idea/
 *.swp
 *.swo
+
+# Environment
+.env
+.env.local
+
+# OS
+Thumbs.db
