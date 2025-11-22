@@ -1,0 +1,20 @@
+# Node modules
+node_modules/
+
+# Tauri build output
+src-tauri/target/
+
+# macOS
+.DS_Store
+
+# Data files
+todos.json
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

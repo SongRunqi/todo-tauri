@@ -1,0 +1,14 @@
+{
+  "name": "todo-tauri",
+  "version": "1.0.0",
+  "description": "A simple to-do app built with Tauri",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.5.0"
+  }
+}
