@@ -323,7 +323,7 @@ fn main() {
                 .map_err(|e| tauri::Error::Io(std::io::Error::new(std::io::ErrorKind::Other, e)))?;
 
             // 获取 todo 二进制文件路径
-            let binary_path = get_todo_binary_path(app)
+            let binary_path = get_todo_binary_path(&app.app_handle())
                 .map_err(|e| tauri::Error::Io(std::io::Error::new(
                     std::io::ErrorKind::NotFound,
                     e,
