@@ -50,9 +50,9 @@ export LLM_MODEL="deepseek-chat"  # 使用的模型
 export LOG_LEVEL="info"  # 日志级别
 ```
 
-### 2. 安装依赖（可选）
+### 2. 安装依赖
 
-如果需要安装 npm 依赖：
+**首次运行前必须安装 npm 依赖：**
 
 ```bash
 npm install

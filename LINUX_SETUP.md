@@ -17,6 +17,14 @@ sudo apt install -y \
     librsvg2-dev
 ```
 
+## 安装 Node.js 依赖
+
+**首次运行前必须安装依赖：**
+
+```bash
+npm install
+```
+
 ## 运行开发服务器
 
 安装依赖后:
