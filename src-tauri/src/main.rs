@@ -364,7 +364,7 @@ fn main() {
                 Ok(_) => println!("   ✓ todo 文件目录初始化成功"),
                 Err(e) => {
                     eprintln!("   ✗ 初始化失败: {}", e);
-                    return Err(tauri::Error::Io(std::io::Error::new(std::io::ErrorKind::Other, e)));
+                    return Err(Box::new(std::io::Error::new(std::io::ErrorKind::Other, e)));
                 }
             }
 
@@ -377,7 +377,7 @@ fn main() {
                 }
                 Err(e) => {
                     eprintln!("   ✗ 获取路径失败: {}", e);
-                    return Err(tauri::Error::Io(std::io::Error::new(
+                    return Err(Box::new(std::io::Error::new(
                         std::io::ErrorKind::NotFound,
                         e,
                     )));
@@ -387,10 +387,12 @@ fn main() {
             // 检查是否已经初始化过
             println!("⚙️  步骤 3/3: 检查 go-todo 初始化状态...");
             let todo_dir = dirs::home_dir()
-                .ok_or_else(|| tauri::Error::Io(std::io::Error::new(
-                    std::io::ErrorKind::NotFound,
-                    "无法获取用户主目录",
-                )))?
+                .ok_or_else(|| -> Box<dyn std::error::Error> {
+                    Box::new(std::io::Error::new(
+                        std::io::ErrorKind::NotFound,
+                        "无法获取用户主目录",
+                    ))
+                })?
                 .join(".todo");
 
             println!("   📂 todo 目录: {:?}", todo_dir);
