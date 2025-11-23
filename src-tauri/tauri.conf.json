@@ -29,6 +29,9 @@
       "active": true,
       "targets": "all",
       "identifier": "com.todoapp.dev",
+      "icon": [
+        "icons/icon.png"
+      ],
       "externalBin": [
         "binaries/todo"
       ]
