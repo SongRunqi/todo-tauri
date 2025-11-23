@@ -96,11 +96,24 @@ fn save_config(app: &tauri::AppHandle, config: &AppConfig) -> Result<(), String>
 }
 
 fn get_todo_binary_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
-    // Use Tauri's sidecar API to automatically select the correct binary for the platform
+    // Determine the correct binary name based on the platform
+    let binary_name = if cfg!(target_os = "macos") {
+        if cfg!(target_arch = "aarch64") {
+            "binaries/todo-aarch64-apple-darwin"
+        } else {
+            "binaries/todo-x86_64-apple-darwin"
+        }
+    } else if cfg!(target_os = "linux") {
+        "binaries/todo-x86_64-unknown-linux-gnu"
+    } else {
+        "binaries/todo"
+    };
+
+    // Use Tauri's resource API to resolve the binary path
     let resource_path = app
         .path_resolver()
-        .resolve_resource("binaries/todo")
-        .ok_or("Failed to resolve todo binary path")?;
+        .resolve_resource(binary_name)
+        .ok_or(format!("Failed to resolve {} binary path", binary_name))?;
     Ok(resource_path)
 }
 
@@ -117,11 +130,6 @@ fn get_todo_dir() -> Result<PathBuf, String> {
 fn get_todos_file_path() -> Result<PathBuf, String> {
     let todo_dir = get_todo_dir()?;
     Ok(todo_dir.join("todos.json"))
-}
-
-fn get_todo_config_file_path() -> Result<PathBuf, String> {
-    let todo_dir = get_todo_dir()?;
-    Ok(todo_dir.join("config.json"))
 }
 
 fn initialize_todo_files() -> Result<(), String> {
@@ -314,13 +322,11 @@ fn main() {
             initialize_todo_files()
                 .map_err(|e| tauri::Error::Io(std::io::Error::new(std::io::ErrorKind::Other, e)))?;
 
-            // 初始化 todo 环境
-            let binary_path = app
-                .path_resolver()
-                .resolve_resource("binaries/todo")
-                .ok_or(tauri::Error::Io(std::io::Error::new(
+            // 获取 todo 二进制文件路径
+            let binary_path = get_todo_binary_path(app)
+                .map_err(|e| tauri::Error::Io(std::io::Error::new(
                     std::io::ErrorKind::NotFound,
-                    "Failed to resolve todo binary",
+                    e,
                 )))?;
 
             // 初始化 go-todo
