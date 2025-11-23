@@ -91,8 +91,7 @@ fn save_config(app: &tauri::AppHandle, config: &AppConfig) -> Result<(), String>
     let config_path = get_config_path(app)?;
     let json = serde_json::to_string_pretty(config)
         .map_err(|e| format!("Failed to serialize config: {}", e))?;
-    fs::write(&config_path, json)
-        .map_err(|e| format!("Failed to write config file: {}", e))?;
+    fs::write(&config_path, json).map_err(|e| format!("Failed to write config file: {}", e))?;
     Ok(())
 }
 
@@ -103,6 +102,38 @@ fn get_todo_binary_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, St
         .resolve_resource("binaries/todo")
         .ok_or("Failed to resolve todo binary path")?;
     Ok(resource_path)
+}
+
+fn get_todo_dir() -> Result<PathBuf, String> {
+    let home = dirs::home_dir().ok_or("无法获取用户主目录")?;
+    let todo_dir = home.join(".todo");
+
+    // 确保 .todo 目录存在
+    fs::create_dir_all(&todo_dir).map_err(|e| format!("无法创建 .todo 目录: {}", e))?;
+
+    Ok(todo_dir)
+}
+
+fn get_todos_file_path() -> Result<PathBuf, String> {
+    let todo_dir = get_todo_dir()?;
+    Ok(todo_dir.join("todos.json"))
+}
+
+fn get_todo_config_file_path() -> Result<PathBuf, String> {
+    let todo_dir = get_todo_dir()?;
+    Ok(todo_dir.join("config.json"))
+}
+
+fn initialize_todo_files() -> Result<(), String> {
+    let todos_file = get_todos_file_path()?;
+
+    // 如果 todos.json 不存在，创建一个空的
+    if !todos_file.exists() {
+        let default_todos = r#"{"items":[]}"#;
+        fs::write(&todos_file, default_todos).map_err(|e| format!("无法创建 todos.json: {}", e))?;
+    }
+
+    Ok(())
 }
 
 fn execute_todo_command(app: &tauri::AppHandle, args: &[&str]) -> Result<String, String> {
@@ -136,9 +167,7 @@ fn execute_todo_command(app: &tauri::AppHandle, args: &[&str]) -> Result<String,
         }
     }
 
-    let output = cmd
-        .output()
-        .map_err(|e| format!("执行命令失败: {}", e))?;
+    let output = cmd.output().map_err(|e| format!("执行命令失败: {}", e))?;
 
     if !output.status.success() {
         let error = String::from_utf8_lossy(&output.stderr);
@@ -149,28 +178,54 @@ fn execute_todo_command(app: &tauri::AppHandle, args: &[&str]) -> Result<String,
 }
 
 fn parse_alfred_output(output: &str) -> Result<Vec<Todo>, String> {
-    let alfred_response: AlfredResponse =
-        serde_json::from_str(output).map_err(|e| format!("解析 JSON 失败: {}", e))?;
+    // 处理空输出或无效JSON
+    let output = output.trim();
+    if output.is_empty() || output == "{\"items\":[]}" {
+        return Ok(Vec::new());
+    }
+
+    let alfred_response: AlfredResponse = serde_json::from_str(output)
+        .map_err(|e| format!("解析 JSON 失败: {} (输出: {})", e, output))?;
 
     let mut todos = Vec::new();
     for item in alfred_response.items {
         // 从 title 中提取 ID 和 text
-        // 格式: "[1] 🎯 Task Name [剩余时间]"
+        // 格式可能是: "[1] 🎯 Task Name [剩余时间]" 或 "[1] Task Name" 等多种格式
         let title_parts: Vec<&str> = item.title.splitn(2, ']').collect();
         if title_parts.len() < 2 {
             continue;
         }
 
-        let id_str = title_parts[0].trim_start_matches('[');
+        let id_str = title_parts[0].trim_start_matches('[').trim();
         let id = id_str.parse::<u32>().unwrap_or(0);
+        if id == 0 {
+            continue;
+        }
 
         let rest = title_parts[1].trim();
-        let text_parts: Vec<&str> = rest.splitn(2, "🎯").collect();
-        let text = if text_parts.len() > 1 {
-            text_parts[1].trim().split('[').next().unwrap_or("").trim()
+
+        // 尝试提取任务名称，支持多种格式
+        let text = if let Some(pos) = rest.find("🎯") {
+            rest[pos + 3..]
+                .trim()
+                .split('[')
+                .next()
+                .unwrap_or("")
+                .trim()
+        } else if let Some(pos) = rest.find("✅") {
+            rest[pos + 3..]
+                .trim()
+                .split('[')
+                .next()
+                .unwrap_or("")
+                .trim()
         } else {
             rest.split('[').next().unwrap_or("").trim()
         };
+
+        if text.is_empty() {
+            continue;
+        }
 
         let completed = item.subtitle.as_ref().map_or(false, |s| s.contains("✅"));
 
@@ -255,17 +310,28 @@ fn save_app_config(app: tauri::AppHandle, config: AppConfig) -> Result<(), Strin
 fn main() {
     tauri::Builder::default()
         .setup(|app| {
+            // 初始化 todo 文件目录
+            initialize_todo_files()
+                .map_err(|e| tauri::Error::Io(std::io::Error::new(std::io::ErrorKind::Other, e)))?;
+
             // 初始化 todo 环境
             let binary_path = app
                 .path_resolver()
                 .resolve_resource("binaries/todo")
-                .ok_or("Failed to resolve todo binary")?;
+                .ok_or(tauri::Error::Io(std::io::Error::new(
+                    std::io::ErrorKind::NotFound,
+                    "Failed to resolve todo binary",
+                )))?;
 
             // 初始化 go-todo
-            let _ = Command::new(binary_path)
+            let output = Command::new(&binary_path)
                 .arg("init")
                 .env("TODO_LANG", "zh")
                 .output();
+
+            if let Err(e) = output {
+                eprintln!("初始化 go-todo 失败: {}", e);
+            }
 
             Ok(())
         })

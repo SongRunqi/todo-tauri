@@ -13,27 +13,32 @@
             <button id="settingsBtn" class="settings-btn" title="设置">⚙️</button>
         </div>
 
-        <div class="input-section">
-            <input
-                type="text"
-                id="todoInput"
-                placeholder="添加新的待办事项..."
-                autocomplete="off"
-            >
-            <button id="addBtn">添加</button>
-        </div>
+        <!-- 加载状态和错误消息 -->
+        <div id="statusMessage" class="status-message"></div>
 
-        <div class="filter-section">
-            <button class="filter-btn active" data-filter="all">全部</button>
-            <button class="filter-btn" data-filter="active">进行中</button>
-            <button class="filter-btn" data-filter="completed">已完成</button>
-        </div>
+        <div id="appContent" style="display: none;">
+            <div class="input-section">
+                <input
+                    type="text"
+                    id="todoInput"
+                    placeholder="添加新的待办事项..."
+                    autocomplete="off"
+                >
+                <button id="addBtn">添加</button>
+            </div>
 
-        <ul id="todoList" class="todo-list"></ul>
+            <div class="filter-section">
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="active">进行中</button>
+                <button class="filter-btn" data-filter="completed">已完成</button>
+            </div>
 
-        <div class="stats">
-            <span id="todoCount">0 个待办事项</span>
-            <button id="clearCompleted">清除已完成</button>
+            <ul id="todoList" class="todo-list"></ul>
+
+            <div class="stats">
+                <span id="todoCount">0 个待办事项</span>
+                <button id="clearCompleted">清除已完成</button>
+            </div>
         </div>
     </div>
 

@@ -10,15 +10,45 @@ const todoList = document.getElementById('todoList');
 const todoCount = document.getElementById('todoCount');
 const clearCompletedBtn = document.getElementById('clearCompleted');
 const filterBtns = document.querySelectorAll('.filter-btn');
+const statusMessage = document.getElementById('statusMessage');
+const appContent = document.getElementById('appContent');
+
+// 显示状态消息
+function showStatus(message, type = 'loading') {
+    statusMessage.className = `status-message ${type}`;
+    if (type === 'loading') {
+        statusMessage.innerHTML = `<div class="loading-spinner">⏳</div><p>${message}</p>`;
+    } else if (type === 'error') {
+        statusMessage.innerHTML = `<p>❌ ${message}</p><button onclick="retryInit()">重试</button>`;
+    } else if (type === 'success') {
+        statusMessage.innerHTML = `<p>✅ ${message}</p>`;
+    }
+}
+
+// 隐藏状态消息
+function hideStatus() {
+    statusMessage.className = 'status-message';
+    statusMessage.innerHTML = '';
+}
+
+// 重试初始化
+async function retryInit() {
+    init();
+}
 
 // 初始化
 async function init() {
     try {
+        showStatus('正在加载待办事项...');
         todos = await invoke('load_todos');
+        hideStatus();
+        appContent.style.display = '';
         renderTodos();
     } catch (error) {
         console.error('加载待办事项失败:', error);
+        showStatus(`加载失败: ${error}`, 'error');
         todos = [];
+        appContent.style.display = 'none';
     }
 }
 
