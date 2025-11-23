@@ -3,42 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>待办事项</title>
+    <title>待办事项 - Todo App</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📝 我的待办事项</h1>
-            <button id="settingsBtn" class="settings-btn" title="设置">⚙️</button>
-        </div>
+    <div class="app-wrapper">
+        <!-- 背景装饰元素 -->
+        <div class="bg-decoration decoration-1"></div>
+        <div class="bg-decoration decoration-2"></div>
+        <div class="bg-decoration decoration-3"></div>
 
-        <!-- 加载状态和错误消息 -->
-        <div id="statusMessage" class="status-message"></div>
+        <div class="container">
+            <!-- 头部 -->
+            <header class="header">
+                <div class="header-content">
+                    <div class="logo-section">
+                        <div class="logo-icon">✓</div>
+                        <h1>待办清单</h1>
+                    </div>
+                    <button id="settingsBtn" class="settings-btn" title="设置">
+                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none">
+                            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </header>
 
-        <div id="appContent" style="display: none;">
-            <div class="input-section">
-                <input
-                    type="text"
-                    id="todoInput"
-                    placeholder="添加新的待办事项..."
-                    autocomplete="off"
-                >
-                <button id="addBtn">添加</button>
-            </div>
+            <!-- 加载状态和错误消息 -->
+            <div id="statusMessage" class="status-message"></div>
 
-            <div class="filter-section">
-                <button class="filter-btn active" data-filter="all">全部</button>
-                <button class="filter-btn" data-filter="active">进行中</button>
-                <button class="filter-btn" data-filter="completed">已完成</button>
-            </div>
+            <!-- 主要内容区域 -->
+            <main id="appContent">
+                <!-- 输入区域 -->
+                <div class="input-section">
+                    <div class="input-wrapper">
+                        <svg class="input-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                            <path d="M12 8v8M8 12h8" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <input
+                            type="text"
+                            id="todoInput"
+                            placeholder="添加新的待办事项..."
+                            autocomplete="off"
+                        >
+                        <button id="addBtn" class="add-btn">
+                            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none">
+                                <path d="M12 5v14M5 12h14" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
 
-            <ul id="todoList" class="todo-list"></ul>
+                <!-- 过滤器 -->
+                <div class="filter-section">
+                    <button class="filter-btn active" data-filter="all">
+                        <span class="filter-count" id="countAll">0</span>
+                        <span class="filter-label">全部</span>
+                    </button>
+                    <button class="filter-btn" data-filter="active">
+                        <span class="filter-count" id="countActive">0</span>
+                        <span class="filter-label">进行中</span>
+                    </button>
+                    <button class="filter-btn" data-filter="completed">
+                        <span class="filter-count" id="countCompleted">0</span>
+                        <span class="filter-label">已完成</span>
+                    </button>
+                </div>
 
-            <div class="stats">
-                <span id="todoCount">0 个待办事项</span>
-                <button id="clearCompleted">清除已完成</button>
-            </div>
+                <!-- 待办事项列表 -->
+                <div class="todo-list-container">
+                    <ul id="todoList" class="todo-list"></ul>
+
+                    <!-- 空状态 -->
+                    <div id="emptyState" class="empty-state">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" width="64" height="64" stroke="currentColor" fill="none">
+                                <path d="M9 11l3 3L22 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <h3 class="empty-title">暂无待办事项</h3>
+                        <p class="empty-description">在上方输入框中添加你的第一个待办事项</p>
+                    </div>
+                </div>
+
+                <!-- 底部统计和操作 -->
+                <footer class="footer">
+                    <div class="stats-info">
+                        <span class="stats-icon">📊</span>
+                        <span id="todoCount">0 个待办事项</span>
+                    </div>
+                    <button id="clearCompleted" class="clear-btn">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none">
+                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span>清除已完成</span>
+                    </button>
+                </footer>
+            </main>
         </div>
     </div>
 
