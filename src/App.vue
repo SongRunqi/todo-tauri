@@ -85,7 +85,12 @@ import { useSettings } from '@/composables/useSettings'
 const todos = useTodos()
 const settings = useSettings()
 
-onMounted(() => {
-  todos.loadTodos()
+onMounted(async () => {
+  // Wait for Tauri API to be available
+  if (typeof window !== 'undefined' && window.__TAURI__) {
+    // Give Tauri some time to initialize
+    await new Promise(resolve => setTimeout(resolve, 100))
+  }
+  await todos.loadTodos()
 })
 </script>
