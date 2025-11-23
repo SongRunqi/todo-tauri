@@ -329,14 +329,30 @@ fn main() {
                     e,
                 )))?;
 
-            // 初始化 go-todo
-            let output = Command::new(&binary_path)
-                .arg("init")
-                .env("TODO_LANG", "zh")
-                .output();
+            // 检查是否已经初始化过
+            let todo_dir = dirs::home_dir()
+                .ok_or_else(|| tauri::Error::Io(std::io::Error::new(
+                    std::io::ErrorKind::NotFound,
+                    "无法获取用户主目录",
+                )))?
+                .join(".todo");
 
-            if let Err(e) = output {
-                eprintln!("初始化 go-todo 失败: {}", e);
+            let config_file = todo_dir.join("config.json");
+
+            // 只有在未初始化时才运行 init
+            if !config_file.exists() {
+                println!("首次运行，初始化 go-todo...");
+                let output = Command::new(&binary_path)
+                    .arg("lang")
+                    .arg("set")
+                    .arg("zh")
+                    .output();
+
+                if let Err(e) = output {
+                    eprintln!("设置语言失败: {}", e);
+                }
+            } else {
+                println!("go-todo 已初始化");
             }
 
             Ok(())
