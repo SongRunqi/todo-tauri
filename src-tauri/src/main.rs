@@ -200,8 +200,10 @@ fn toggle_todo(id: u32, _app: tauri::AppHandle) -> Result<(), String> {
             "pending".to_string()
         };
 
+        let status = todo.status.clone(); // Capture status before dropping mutable borrow
+
         write_todos(&todo_file)?;
-        println!("   ✓ 状态切换成功 (新状态: {})\n", todo.status);
+        println!("   ✓ 状态切换成功 (新状态: {})\n", status);
         Ok(())
     } else {
         Err(format!("未找到 ID 为 {} 的待办事项", id))
