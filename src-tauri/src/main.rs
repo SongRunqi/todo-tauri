@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
-use tauri::Manager;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 struct Todo {
@@ -98,8 +97,6 @@ fn save_config(app: &tauri::AppHandle, config: &AppConfig) -> Result<(), String>
 }
 
 fn get_todo_binary_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
-    use tauri::api::process::Command as TauriCommand;
-
     // Use Tauri's sidecar API to automatically select the correct binary for the platform
     let resource_path = app
         .path_resolver()
