@@ -1,8 +1,14 @@
 # Node modules
 node_modules/
 
+# Build output
+dist/
+
 # Tauri build output
 src-tauri/target/
+
+# Backups
+*.backup
 
 # macOS
 .DS_Store
