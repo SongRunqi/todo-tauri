@@ -534,3 +534,66 @@ h1 {
     background: var(--bg-hover);
     border-color: var(--text-secondary);
 }
+
+/* 状态消息样式 */
+.status-message {
+    padding: 24px 32px;
+    text-align: center;
+    font-size: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 200px;
+}
+
+.status-message.loading {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+.status-message.error {
+    background: rgba(239, 68, 68, 0.05);
+    color: var(--danger);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.status-message.error button {
+    padding: 10px 20px;
+    background: var(--danger);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.status-message.error button:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+.status-message.success {
+    background: rgba(16, 185, 129, 0.05);
+    color: var(--success);
+}
+
+.loading-spinner {
+    font-size: 32px;
+    animation: spin 2s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
