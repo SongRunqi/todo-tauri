@@ -98,9 +98,12 @@ fn save_config(app: &tauri::AppHandle, config: &AppConfig) -> Result<(), String>
 }
 
 fn get_todo_binary_path(app: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
+    use tauri::api::process::Command as TauriCommand;
+
+    // Use Tauri's sidecar API to automatically select the correct binary for the platform
     let resource_path = app
         .path_resolver()
-        .resolve_resource("binaries/todo-x86_64-unknown-linux-gnu")
+        .resolve_resource("binaries/todo")
         .ok_or("Failed to resolve todo binary path")?;
     Ok(resource_path)
 }
@@ -258,7 +261,7 @@ fn main() {
             // 初始化 todo 环境
             let binary_path = app
                 .path_resolver()
-                .resolve_resource("binaries/todo-x86_64-unknown-linux-gnu")
+                .resolve_resource("binaries/todo")
                 .ok_or("Failed to resolve todo binary")?;
 
             // 初始化 go-todo
